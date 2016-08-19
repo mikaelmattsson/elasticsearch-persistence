@@ -1,0 +1,14 @@
+version: '2'
+services:
+  php:
+    build: docker/php
+    links:
+      - elasticsearch
+    volumes:
+      - ./:/var/www/html
+  elasticsearch:
+    image: elasticsearch:2.3.5
+    ports:
+      - 9200
+    volumes:
+      - ./data/elasticsearch/:/usr/share/elasticsearch/data

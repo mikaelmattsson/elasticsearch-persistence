@@ -1,12 +1,12 @@
 <?php
 
-namespace ElasticPersistence;
+namespace Seek;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use ElasticPersistence\Hibernate\DocumentSaveHandler;
-use ElasticPersistence\Index\IndexLocatorInterface;
-use ElasticPersistence\Index\IndexManager;
-use ElasticPersistence\Index\SimpleIndexLocator;
+use Seek\Hibernate\DocumentSaveHandler;
+use Seek\Index\IndexLocatorInterface;
+use Seek\Index\IndexManager;
+use Seek\Index\SimpleIndexLocator;
 use Elasticsearch\Client;
 
 class DocumentManager implements ObjectManager

@@ -1,8 +1,8 @@
 <?php
 
-namespace ElasticPersistenceTest\Integration;
+namespace SeekTest\Integration;
 
-use ElasticPersistenceTest\Domain\User\User;
+use SeekTest\Domain\User\User;
 use Ramsey\Uuid\Uuid;
 
 class PersistenceTest extends AbstractIntegrationTest
@@ -18,6 +18,14 @@ class PersistenceTest extends AbstractIntegrationTest
         $this->documentManager->persist($user);
 
         $this->documentManager->flush();
+    }
+
+    /**
+     * @depends testSave
+     */
+    public function testFind()
+    {
+        $respository = $this->documentManager->getRepository(User::class);
 
         $this->assertEquals(true, true);
     }

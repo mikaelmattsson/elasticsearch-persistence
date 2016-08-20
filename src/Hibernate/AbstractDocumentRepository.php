@@ -1,9 +1,9 @@
 <?php
 
-namespace ElasticPersistence\Hibernate;
+namespace Seek\Hibernate;
 
 use App\Infrastructure\Exception\InfrastructureException;
-use ElasticPersistence\DocumentInterface;
+use Seek\DocumentInterface;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidFactory;

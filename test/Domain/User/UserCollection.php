@@ -1,6 +1,6 @@
 <?php
 
-namespace ElasticPersistenceTest\Domain\User;
+namespace SeekTest\Domain\User;
 
 class UserCollection
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace ElasticPersistenceTest\Domain\User;
+namespace SeekTest\Domain\User;
 
-use ElasticPersistence\DocumentInterface;
+use Seek\DocumentInterface;
 use Ramsey\Uuid\Uuid;
 
 class User implements DocumentInterface

@@ -1,6 +1,6 @@
 <?php
 
-namespace ElasticPersistence;
+namespace Seek;
 
 use Ramsey\Uuid\Uuid;
 

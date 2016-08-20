@@ -1,8 +1,8 @@
 <?php
 
-namespace ElasticPersistenceTest\Integration;
+namespace SeekTest\Integration;
 
-use ElasticPersistence\DocumentManager;
+use Seek\DocumentManager;
 use Elasticsearch\ClientBuilder;
 
 abstract class AbstractIntegrationTest extends \PHPUnit_Framework_TestCase

@@ -1,6 +1,6 @@
 <?php
 
-namespace ElasticPersistence\Hibernate;
+namespace Seek\Hibernate;
 
 use Elasticsearch\ClientBuilder;
 use Illuminate\Contracts\Foundation\Application;

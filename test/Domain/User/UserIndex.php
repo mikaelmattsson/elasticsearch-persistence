@@ -1,9 +1,9 @@
 <?php
 
-namespace ElasticPersistenceTest\Domain\User;
+namespace SeekTest\Domain\User;
 
-use ElasticPersistence\DocumentInterface;
-use ElasticPersistence\Index\IndexInterface;
+use Seek\DocumentInterface;
+use Seek\Index\IndexInterface;
 
 class UserIndex implements IndexInterface
 {

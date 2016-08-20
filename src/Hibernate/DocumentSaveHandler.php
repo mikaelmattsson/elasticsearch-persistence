@@ -1,9 +1,9 @@
 <?php
 
-namespace ElasticPersistence\Hibernate;
+namespace Seek\Hibernate;
 
-use ElasticPersistence\DocumentInterface;
-use ElasticPersistence\Index\IndexManager;
+use Seek\DocumentInterface;
+use Seek\Index\IndexManager;
 use Elasticsearch\Client;
 
 class DocumentSaveHandler

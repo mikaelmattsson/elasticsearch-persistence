@@ -22,8 +22,8 @@
     },
     "autoload": {
         "psr-4": {
-            "ElasticPersistence\\": "src/",
-            "ElasticPersistenceTest\\": "test/"
+            "Seek\\": "src/",
+            "SeekTest\\": "test/"
         }
     }
 }

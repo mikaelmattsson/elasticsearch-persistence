@@ -1,6 +1,6 @@
 <?php
 
-namespace ElasticPersistence\Index;
+namespace Seek\Index;
 
 class SimpleIndexLocator implements IndexLocatorInterface
 {

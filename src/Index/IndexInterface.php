@@ -1,8 +1,8 @@
 <?php
 
-namespace ElasticPersistence\Index;
+namespace Seek\Index;
 
-use ElasticPersistence\DocumentInterface;
+use Seek\DocumentInterface;
 
 interface IndexInterface
 {

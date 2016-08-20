@@ -5,7 +5,8 @@ services:
     links:
       - elasticsearch
     volumes:
-      - ./:/var/www/html
+      - .:/var/www/html
+      - ./log:/var/log
   elasticsearch:
     image: elasticsearch:2.3.5
     ports:

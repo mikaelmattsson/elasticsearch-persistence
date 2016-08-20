@@ -1,10 +1,11 @@
 <?php
 
-namespace Seek\Hibernate;
+namespace Seek\Integration\Laravel;
 
 use Elasticsearch\ClientBuilder;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
+use Seek\DocumentManager;
 
 class PersistenceServiceProvider extends ServiceProvider
 {
@@ -12,10 +13,10 @@ class PersistenceServiceProvider extends ServiceProvider
     {
         $app = $this->app;
 
-        $app->singleton(PersistenceService::class, function (Application $app) {
+        $app->singleton(DocumentManager::class, function (Application $app) {
             $hosts = $app['config']->get('elasticsearch.hosts');
 
-            return new PersistenceService(
+            return new DocumentManager(
                 ClientBuilder::create()->setHosts($hosts)->build()
             );
         });

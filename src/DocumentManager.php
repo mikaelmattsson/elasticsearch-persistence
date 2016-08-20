@@ -3,11 +3,13 @@
 namespace Seek;
 
 use Doctrine\Common\Persistence\ObjectManager;
+use Elasticsearch\Client;
+use Seek\Document\DocumentInterface;
 use Seek\Hibernate\DocumentSaveHandler;
 use Seek\Index\IndexLocatorInterface;
 use Seek\Index\IndexManager;
 use Seek\Index\SimpleIndexLocator;
-use Elasticsearch\Client;
+use Seek\Repository\SimpleRepositoryLocator;
 
 class DocumentManager implements ObjectManager
 {
@@ -32,6 +34,11 @@ class DocumentManager implements ObjectManager
     protected $indexManager;
 
     /**
+     * @var SimpleRepositoryLocator
+     */
+    protected $repositoryLocator;
+
+    /**
      * @var Client
      */
     private $client;
@@ -53,6 +60,7 @@ class DocumentManager implements ObjectManager
         $this->indexLocator = $indexLocator ? $indexLocator : new SimpleIndexLocator();
         $this->indexManager = new IndexManager($this->indexLocator);
         $this->documentSaveHandler = new DocumentSaveHandler($client, $this->indexManager);
+        $this->repositoryLocator = new SimpleRepositoryLocator($this);
     }
 
     /**
@@ -67,7 +75,7 @@ class DocumentManager implements ObjectManager
      */
     public function find($className, $id)
     {
-        // TODO: Implement find() method.
+        return $this->getRepository($className)->find($id);
     }
 
     /**
@@ -204,7 +212,7 @@ class DocumentManager implements ObjectManager
      */
     public function getRepository($className)
     {
-        // TODO: Implement getRepository() method.
+        $this->repositoryLocator->get($className);
     }
 
     /**

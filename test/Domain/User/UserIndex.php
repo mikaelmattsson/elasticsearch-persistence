@@ -2,7 +2,7 @@
 
 namespace SeekTest\Domain\User;
 
-use Seek\DocumentInterface;
+use Seek\Document\DocumentInterface;
 use Seek\Index\IndexInterface;
 
 class UserIndex implements IndexInterface

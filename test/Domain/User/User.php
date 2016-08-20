@@ -2,8 +2,8 @@
 
 namespace SeekTest\Domain\User;
 
-use Seek\DocumentInterface;
 use Ramsey\Uuid\Uuid;
+use Seek\Document\DocumentInterface;
 
 class User implements DocumentInterface
 {

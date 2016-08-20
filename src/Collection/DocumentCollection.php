@@ -1,12 +1,70 @@
 <?php
 
-namespace Seek;
+namespace Seek\Collection;
 
 use Closure;
+use Doctrine\Common\Collections\Collection;
+use Seek\Document\DocumentInterface;
 use Traversable;
 
-class Collection implements \Doctrine\Common\Collections\Collection
+class DocumentCollection implements Collection
 {
+    private $container = array();
+
+    public function __construct(array $list)
+    {
+        $this->container = $list;
+    }
+
+    /**
+     * Whether a offset exists.
+     *
+     * @param mixed $offset
+     *
+     * @return bool
+     */
+    public function offsetExists($offset)
+    {
+        return isset($this->container[$offset]);
+    }
+
+    /**
+     * Offset to retrieve.
+     *
+     * @param mixed $offset
+     *
+     * @return DocumentInterface
+     */
+    public function offsetGet($offset)
+    {
+        return isset($this->container[$offset]) ? $this->container[$offset] : null;
+    }
+
+    /**
+     * Offset to set.
+     *
+     * @param mixed             $offset
+     * @param DocumentInterface $value
+     */
+    public function offsetSet($offset, $value)
+    {
+        if (is_null($offset)) {
+            $this->container[] = $value;
+        } else {
+            $this->container[$offset] = $value;
+        }
+    }
+
+    /**
+     * Offset to unset.
+     *
+     * @param mixed $offset
+     */
+    public function offsetUnset($offset)
+    {
+        unset($this->container[$offset]);
+    }
+
     /**
      * Adds an element at the end of the collection.
      *
@@ -210,7 +268,7 @@ class Collection implements \Doctrine\Common\Collections\Collection
      *
      * @param Closure $p The predicate used for filtering.
      *
-     * @return \Doctrine\Common\Collections\Collection A collection with the results of the filter operation.
+     * @return Collection A collection with the results of the filter operation.
      */
     public function filter(Closure $p)
     {
@@ -235,7 +293,7 @@ class Collection implements \Doctrine\Common\Collections\Collection
      *
      * @param Closure $func
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function map(Closure $func)
     {
@@ -301,80 +359,6 @@ class Collection implements \Doctrine\Common\Collections\Collection
     public function getIterator()
     {
         // TODO: Implement getIterator() method.
-    }
-
-    /**
-     * Whether a offset exists.
-     *
-     * @link http://php.net/manual/en/arrayaccess.offsetexists.php
-     *
-     * @param mixed $offset <p>
-     *                      An offset to check for.
-     *                      </p>
-     *
-     * @return bool true on success or false on failure.
-     *              </p>
-     *              <p>
-     *              The return value will be casted to boolean if non-boolean was returned.
-     *
-     * @since 5.0.0
-     */
-    public function offsetExists($offset)
-    {
-        // TODO: Implement offsetExists() method.
-    }
-
-    /**
-     * Offset to retrieve.
-     *
-     * @link http://php.net/manual/en/arrayaccess.offsetget.php
-     *
-     * @param mixed $offset <p>
-     *                      The offset to retrieve.
-     *                      </p>
-     *
-     * @return mixed Can return all value types.
-     *
-     * @since 5.0.0
-     */
-    public function offsetGet($offset)
-    {
-        // TODO: Implement offsetGet() method.
-    }
-
-    /**
-     * Offset to set.
-     *
-     * @link http://php.net/manual/en/arrayaccess.offsetset.php
-     *
-     * @param mixed $offset <p>
-     *                      The offset to assign the value to.
-     *                      </p>
-     * @param mixed $value  <p>
-     *                      The value to set.
-     *                      </p>
-     *
-     * @since 5.0.0
-     */
-    public function offsetSet($offset, $value)
-    {
-        // TODO: Implement offsetSet() method.
-    }
-
-    /**
-     * Offset to unset.
-     *
-     * @link http://php.net/manual/en/arrayaccess.offsetunset.php
-     *
-     * @param mixed $offset <p>
-     *                      The offset to unset.
-     *                      </p>
-     *
-     * @since 5.0.0
-     */
-    public function offsetUnset($offset)
-    {
-        // TODO: Implement offsetUnset() method.
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace Seek\Index;
 
-use Seek\DocumentInterface;
+use Seek\Document\DocumentInterface;
 
 class IndexManager
 {

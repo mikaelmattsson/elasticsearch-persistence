@@ -2,9 +2,9 @@
 
 namespace Seek\Hibernate;
 
-use Seek\DocumentInterface;
-use Seek\Index\IndexManager;
 use Elasticsearch\Client;
+use Seek\Document\DocumentInterface;
+use Seek\Index\IndexManager;
 
 class DocumentSaveHandler
 {

@@ -2,3 +2,4 @@
 /vendor
 /data
 /log
+/.php_cs.cache

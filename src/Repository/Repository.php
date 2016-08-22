@@ -4,9 +4,15 @@ namespace Seek\Repository;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Seek\Collection\DocumentCollection;
+use Seek\DocumentManager;
 
 class Repository implements ObjectRepository
 {
+    /**
+     * @var DocumentManager
+     */
+    private $documentManager;
+
     /**
      * @var string
      */
@@ -20,11 +26,16 @@ class Repository implements ObjectRepository
     /**
      * DocumentRepository constructor.
      *
+     * @param DocumentManager $documentManager
      * @param string $documentClass
      * @param string $documentCollectionClass
      */
-    public function __construct(string $documentClass, string $documentCollectionClass = DocumentCollection::class)
-    {
+    public function __construct(
+        DocumentManager $documentManager,
+        string $documentClass,
+        string $documentCollectionClass = DocumentCollection::class
+    ) {
+        $this->documentManager = $documentManager;
         $this->documentClass = $documentClass;
         $this->documentCollectionClass = $documentCollectionClass;
     }
@@ -58,10 +69,10 @@ class Repository implements ObjectRepository
      * an UnexpectedValueException if certain values of the sorting or limiting details are
      * not supported.
      *
-     * @param array      $criteria
+     * @param array $criteria
      * @param array|null $orderBy
-     * @param int|null   $limit
-     * @param int|null   $offset
+     * @param int|null $limit
+     * @param int|null $offset
      *
      * @return array The objects.
      *

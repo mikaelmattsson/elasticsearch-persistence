@@ -10,6 +10,6 @@ services:
   elasticsearch:
     image: elasticsearch:2.3.5
     ports:
-      - 9200
-    volumes:
-      - ./data/elasticsearch/:/usr/share/elasticsearch/data
+      - 9200:9200
+    #volumes:
+    #  - ./data/elasticsearch/:/usr/share/elasticsearch/data

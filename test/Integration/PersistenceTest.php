@@ -2,6 +2,7 @@
 
 namespace SeekTest\Integration;
 
+use Seek\Repository\Repository;
 use SeekTest\Domain\User\User;
 use Ramsey\Uuid\Uuid;
 
@@ -25,7 +26,9 @@ class PersistenceTest extends AbstractIntegrationTest
      */
     public function testFind()
     {
-        $respository = $this->documentManager->getRepository(User::class);
+        $repository = $this->documentManager->getRepository(User::class);
+
+        $this->assertInstanceOf(Repository::class, $repository);
 
         $this->assertEquals(true, true);
     }

@@ -34,9 +34,9 @@ class SimpleRepositoryLocator implements RepositoryLocatorInterface
         $repositoryClassName = $documentClassName.'Repository';
 
         if (class_exists($repositoryClassName)) {
-            $repository = new $repositoryClassName($documentClassName);
+            $repository = new $repositoryClassName($this->documentManager, $documentClassName);
         } else {
-            $repository = new Repository($documentClassName);
+            $repository = new Repository($this->documentManager, $documentClassName);
         }
 
         return $this->repositories[$documentClassName] = $repository;

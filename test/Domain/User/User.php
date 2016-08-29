@@ -13,22 +13,28 @@ class User implements DocumentInterface
     protected $properties;
 
     /**
+     * @var string
+     */
+    protected $id;
+
+    /**
      * User constructor.
      *
      * @param array $data
+     * @param null $id
      */
-    public function __construct(array $data)
+    public function __construct(array $data, $id = null)
     {
+        $this->id = $id ? $id : Uuid::uuid4()->toString();
         $this->properties = [
-            'uuid' => $data['uuid'],
             'name' => $data['name'],
             'email' => $data['email'],
         ];
     }
 
-    public function getUuid() : Uuid
+    public function getId() : string
     {
-        return $this->properties['uuid'];
+        return $this->id;
     }
 
     public function isDirty() : bool
@@ -46,5 +52,10 @@ class User implements DocumentInterface
         $this->properties[$property] = $value;
 
         return $this;
+    }
+
+    public function getProperties() : array
+    {
+        return $this->properties;
     }
 }

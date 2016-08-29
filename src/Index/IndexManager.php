@@ -26,10 +26,21 @@ class IndexManager
         $this->indexLocator = $indexLocator;
     }
 
+    /**
+     * @param DocumentInterface $documentInterface
+     * @return IndexInterface
+     */
     public function getIndexOfDocument(DocumentInterface $documentInterface) : IndexInterface
     {
-        $className = get_class($documentInterface);
+        return $this->getIndexOfClass(get_class($documentInterface));
+    }
 
+    /**
+     * @param string $className
+     * @return IndexInterface
+     */
+    public function getIndexOfClass(string $className) : IndexInterface
+    {
         if (isset($this->indexes[$className])) {
             return $this->indexes[$className];
         }

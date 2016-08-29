@@ -3,41 +3,37 @@
 namespace Seek\Repository;
 
 use Doctrine\Common\Persistence\ObjectRepository;
-use Seek\Collection\DocumentCollection;
 use Seek\DocumentManager;
 
-class Repository implements ObjectRepository
+/**
+ * Extend this class when defining custom repositories.
+ */
+abstract class AbstractRepository implements ObjectRepository
 {
     /**
      * @var DocumentManager
      */
-    private $documentManager;
+    protected $documentManager;
 
     /**
      * @var string
      */
-    private $documentClass;
+    protected $documentClass;
 
     /**
      * @var string
      */
-    private $documentCollectionClass;
+    protected $documentCollectionClass;
 
     /**
      * DocumentRepository constructor.
      *
      * @param DocumentManager $documentManager
-     * @param string $documentClass
-     * @param string $documentCollectionClass
      */
     public function __construct(
-        DocumentManager $documentManager,
-        string $documentClass,
-        string $documentCollectionClass = DocumentCollection::class
+        DocumentManager $documentManager
     ) {
         $this->documentManager = $documentManager;
-        $this->documentClass = $documentClass;
-        $this->documentCollectionClass = $documentCollectionClass;
     }
 
     /**
@@ -49,7 +45,7 @@ class Repository implements ObjectRepository
      */
     public function find($id)
     {
-        // TODO: Implement find() method.
+        $this->findOneBy(['id' => $id]);
     }
 
     /**
@@ -80,7 +76,14 @@ class Repository implements ObjectRepository
      */
     public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
     {
-        // TODO: Implement findBy() method.
+        $this->documentManager->getPersistenceService()->find(
+            $this->documentClass,
+            $this->documentCollectionClass,
+            $criteria,
+            $orderBy,
+            $limit,
+            $offset
+        );
     }
 
     /**
@@ -92,7 +95,10 @@ class Repository implements ObjectRepository
      */
     public function findOneBy(array $criteria)
     {
-        // TODO: Implement findOneBy() method.
+        $this->documentManager->getPersistenceService()->findOne(
+            $this->documentClass,
+            $criteria
+        );
     }
 
     /**
@@ -102,6 +108,6 @@ class Repository implements ObjectRepository
      */
     public function getClassName()
     {
-        // TODO: Implement getClassName() method.
+        return $this->documentClass;
     }
 }

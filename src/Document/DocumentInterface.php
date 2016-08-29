@@ -2,10 +2,9 @@
 
 namespace Seek\Document;
 
-use Ramsey\Uuid\Uuid;
-
 interface DocumentInterface
 {
-    public function getUuid() : Uuid;
+    public function getId() : string;
+    public function getProperties() : array;
     public function isDirty() : bool;
 }

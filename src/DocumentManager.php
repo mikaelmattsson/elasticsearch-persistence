@@ -5,28 +5,20 @@ namespace Seek;
 use Doctrine\Common\Persistence\ObjectManager;
 use Elasticsearch\Client;
 use Seek\Document\DocumentInterface;
-use Seek\Hibernate\DocumentSaveHandler;
 use Seek\Index\IndexLocatorInterface;
 use Seek\Index\IndexManager;
 use Seek\Index\SimpleIndexLocator;
+use Seek\Persistence\PersistenceService;
+use Seek\Persistence\UnitOfWork;
+use Seek\Repository\AbstractRepository;
 use Seek\Repository\SimpleRepositoryLocator;
 
 class DocumentManager implements ObjectManager
 {
     /**
-     * @var DocumentInterface[]
+     * @var PersistenceService
      */
-    protected $saveStack = [];
-
-    /**
-     * @var DocumentInterface[]
-     */
-    protected $removeStack = [];
-
-    /**
-     * @var DocumentSaveHandler
-     */
-    protected $documentSaveHandler;
+    protected $persistenceService;
 
     /**
      * @var IndexManager
@@ -37,6 +29,11 @@ class DocumentManager implements ObjectManager
      * @var SimpleRepositoryLocator
      */
     protected $repositoryLocator;
+
+    /**
+     * @var UnitOfWork
+     */
+    protected $unitOfWork;
 
     /**
      * @var Client
@@ -59,7 +56,8 @@ class DocumentManager implements ObjectManager
         $this->client = $client;
         $this->indexLocator = $indexLocator ? $indexLocator : new SimpleIndexLocator();
         $this->indexManager = new IndexManager($this->indexLocator);
-        $this->documentSaveHandler = new DocumentSaveHandler($client, $this->indexManager);
+        $this->unitOfWork = new UnitOfWork($this->indexManager);
+        $this->persistenceService = new PersistenceService($this->unitOfWork, $client, $this->indexManager);
         $this->repositoryLocator = new SimpleRepositoryLocator($this);
     }
 
@@ -92,12 +90,7 @@ class DocumentManager implements ObjectManager
      */
     public function persist($object)
     {
-        if (!$object instanceof DocumentInterface) {
-            throw new \Exception('$object is not an instance of '.DocumentInterface::class);
-        }
-
-        unset($this->removeStack[$object->getUuid()->toString()]);
-        $this->saveStack[$object->getUuid()->toString()] = $object;
+        $this->unitOfWork->persist($object);
     }
 
     /**
@@ -111,12 +104,7 @@ class DocumentManager implements ObjectManager
      */
     public function remove($object)
     {
-        if (!$object instanceof DocumentInterface) {
-            throw new \Exception('$object is not an instance of '.DocumentInterface::class);
-        }
-
-        unset($this->saveStack[$object->getUuid()->toString()]);
-        $this->removeStack[$object->getUuid()->toString()] = $object;
+        $this->unitOfWork->remove($object);
     }
 
     /**
@@ -149,9 +137,8 @@ class DocumentManager implements ObjectManager
     public function clear($objectName = null)
     {
         // TODO: Implement clear() method.
-
-        $this->saveStack = [];
-        $this->removeStack = [];
+        
+        $this->unitOfWork->clear();
     }
 
     /**
@@ -167,12 +154,7 @@ class DocumentManager implements ObjectManager
      */
     public function detach($object)
     {
-        if (!$object instanceof DocumentInterface) {
-            throw new \Exception('$object is not an instance of '.DocumentInterface::class);
-        }
-
-        unset($this->saveStack[$object->getUuid()->toString()]);
-        unset($this->removeStack[$object->getUuid()->toString()]);
+        $this->unitOfWork->detach($object);
     }
 
     /**
@@ -198,7 +180,7 @@ class DocumentManager implements ObjectManager
      */
     public function flush()
     {
-        $this->documentSaveHandler->save($this->saveStack);
+        $this->persistenceService->save();
 
         // TODO: Implement removal.
     }
@@ -208,11 +190,11 @@ class DocumentManager implements ObjectManager
      *
      * @param string $className
      *
-     * @return \Doctrine\Common\Persistence\ObjectRepository
+     * @return AbstractRepository
      */
     public function getRepository($className)
     {
-        $this->repositoryLocator->get($className);
+        return $this->repositoryLocator->get($className);
     }
 
     /**
@@ -263,11 +245,14 @@ class DocumentManager implements ObjectManager
      */
     public function contains($object)
     {
-        if (!$object instanceof DocumentInterface) {
-            throw new \Exception('$object is not an instance of '.DocumentInterface::class);
-        }
+        $this->unitOfWork->contains($object);
+    }
 
-        return isset($this->saveStack[$object->getUuid()->toString()]) ||
-        isset($this->removeStack[$object->getUuid()->toString()]);
+    /**
+     * @return PersistenceService
+     */
+    public function getPersistenceService()
+    {
+        return $this->persistenceService;
     }
 }

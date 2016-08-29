@@ -15,7 +15,6 @@ class UserIndex implements IndexInterface
     public function serialize(DocumentInterface $document) : array
     {
         return [
-            'uuid' => $document->getUuid(),
             'name' => $document->get('name'),
             'email' => $document->get('email'),
         ];

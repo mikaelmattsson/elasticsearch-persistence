@@ -4,5 +4,5 @@ namespace Seek\Repository;
 
 interface RepositoryLocatorInterface
 {
-    public function get(string $documentClassName) : Repository;
+    public function get(string $documentClassName) : DefaultRepository;
 }

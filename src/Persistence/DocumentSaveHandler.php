@@ -1,9 +1,8 @@
 <?php
 
-namespace Seek\Hibernate;
+namespace Seek\Persistence;
 
 use Elasticsearch\Client;
-use Seek\Document\DocumentInterface;
 use Seek\Index\IndexManager;
 
 class DocumentSaveHandler
@@ -31,24 +30,22 @@ class DocumentSaveHandler
     }
 
     /**
-     * @param DocumentInterface[] $documents
+     * @param UnitOfWork $unitOfWork
      */
-    public function save(array $documents)
+    public function save(UnitOfWork $unitOfWork)
     {
+        $documents = $unitOfWork->getDocumentsForSave();
+
         $body = [];
         $i = 0;
         foreach ($documents as $document) {
-            if (!$document->isDirty()) {
-                continue;
-            }
-
             $index = $this->indexManager->getIndexOfDocument($document);
 
             $body[] = [
                 'index' => [
                     '_index' => $index->getIndex(),
                     '_type' => $index->getType(),
-                    '_id' => $document->getUuid(),
+                    '_id' => $document->getId(),
                 ],
             ];
 

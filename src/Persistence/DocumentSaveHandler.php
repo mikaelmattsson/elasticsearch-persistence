@@ -3,7 +3,7 @@
 namespace Seek\Persistence;
 
 use Elasticsearch\Client;
-use Seek\Index\IndexManager;
+use Seek\Index\IndexList;
 
 class DocumentSaveHandler
 {
@@ -13,20 +13,20 @@ class DocumentSaveHandler
     private $client;
 
     /**
-     * @var IndexManager
+     * @var IndexList
      */
-    private $indexManager;
+    private $indexList;
 
     /**
      * DocumentSaveHandler constructor.
      *
      * @param Client       $client
-     * @param IndexManager $indexManager
+     * @param IndexList $indexList
      */
-    public function __construct(Client $client, IndexManager $indexManager)
+    public function __construct(Client $client, IndexList $indexList)
     {
         $this->client = $client;
-        $this->indexManager = $indexManager;
+        $this->indexList = $indexList;
     }
 
     /**
@@ -39,7 +39,7 @@ class DocumentSaveHandler
         $body = [];
         $i = 0;
         foreach ($documents as $document) {
-            $index = $this->indexManager->getIndexOfDocument($document);
+            $index = $this->indexList->getIndexOfDocument($document);
 
             $body[] = [
                 'index' => [

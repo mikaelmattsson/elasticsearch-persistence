@@ -2,60 +2,20 @@
 
 namespace SeekTest\Domain\User;
 
-use Ramsey\Uuid\Uuid;
-use Seek\Document\DocumentInterface;
+use Seek\Document\Document;
 
-class User implements DocumentInterface
+class User extends Document
 {
     /**
-     * @var array
-     */
-    protected $properties;
-
-    /**
-     * @var string
-     */
-    protected $id;
-
-    /**
-     * User constructor.
-     *
      * @param array $data
      * @param null $id
+     * @return \Seek\Document\DocumentInterface|static
      */
-    public function __construct(array $data, $id = null)
+    public static function create(array $data, $id = null)
     {
-        $this->id = $id ? $id : Uuid::uuid4()->toString();
-        $this->properties = [
-            'name' => $data['name'],
+        return parent::create([
+            'name'  => $data['name'],
             'email' => $data['email'],
-        ];
-    }
-
-    public function getId() : string
-    {
-        return $this->id;
-    }
-
-    public function isDirty() : bool
-    {
-        return true;
-    }
-
-    public function get($property)
-    {
-        return $this->properties[$property];
-    }
-
-    public function set($property, $value)
-    {
-        $this->properties[$property] = $value;
-
-        return $this;
-    }
-
-    public function getProperties() : array
-    {
-        return $this->properties;
+        ], $id);
     }
 }

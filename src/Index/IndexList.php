@@ -4,7 +4,7 @@ namespace Seek\Index;
 
 use Seek\Document\DocumentInterface;
 
-class IndexManager
+class IndexList
 {
     /**
      * @var IndexInterface[]
@@ -46,5 +46,13 @@ class IndexManager
         }
 
         return $this->indexes[$className] = $this->indexLocator->get($className);
+    }
+
+    /**
+     * @param string $class
+     */
+    public function prepareIndex($class)
+    {
+        $index = $this->getIndexOfClass($class);
     }
 }

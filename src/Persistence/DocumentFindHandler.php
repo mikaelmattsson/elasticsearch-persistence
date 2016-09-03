@@ -3,7 +3,9 @@
 namespace Seek\Persistence;
 
 use Elasticsearch\Client;
-use Seek\Index\IndexManager;
+use Seek\Collection\DocumentCollection;
+use Seek\Document\DocumentInterface;
+use Seek\Index\IndexList;
 
 class DocumentFindHandler
 {
@@ -13,51 +15,104 @@ class DocumentFindHandler
     private $client;
 
     /**
-     * @var IndexManager
+     * @var IndexList
      */
-    private $indexManager;
+    private $indexList;
+
+    /**
+     * @var DocumentFactory
+     */
+    private $documentFactory;
 
     /**
      * DocumentSaveHandler constructor.
      *
      * @param Client $client
-     * @param IndexManager $indexManager
+     * @param IndexList $indexList
+     * @param DocumentFactory $documentFactory
      */
-    public function __construct(Client $client, IndexManager $indexManager)
+    public function __construct(Client $client, IndexList $indexList, DocumentFactory $documentFactory)
     {
         $this->client = $client;
-        $this->indexManager = $indexManager;
+        $this->indexList = $indexList;
+        $this->documentFactory = $documentFactory;
     }
 
     /**
      * @param string $class
-     * @param array $criteria
+     * @param string $collectionClass
+     * @param array $properties
      * @param array $orderBy
      * @param int $limit
      * @param int $offset
-     * @return array
+     * @return DocumentInterface[]|DocumentCollection
      */
-    public function find(string $class, array $criteria, array $orderBy = null, $limit = null, $offset = null)
+    public function findByProperties(
+        string $class,
+        string $collectionClass,
+        array $properties,
+        array $orderBy = null,
+        $limit = null,
+        $offset = null
+    ) {
+        $index = $this->indexList->getIndexOfClass($class);
+
+        $result = $this->client->search([
+            'index' => $index->getIndex(),
+            'type'  => $index->getType(),
+            'body'  => [
+                'query' => [
+                    'match' => $properties,
+                ],
+            ],
+        ]);
+
+        return $this->documentFactory->makeMany($class, $collectionClass, $result);
+    }
+
+    /**
+     * @param string $class
+     * @param array $properties
+     * @return DocumentInterface
+     */
+    public function findOneByProperties(string $class, array $properties)
     {
-        $index = $this->indexManager->getIndexOfClass($class);
+        $index = $this->indexList->getIndexOfClass($class);
+
+        $result = $this->client->search([
+            'index' => $index->getIndex(),
+            'type'  => $index->getType(),
+            'body'  => [
+                'query' => [
+                    'match' => $properties,
+                ],
+            ],
+        ]);
+
+        if (count($result['hits']['hits']) === 0) {
+            return null;
+        }
+
+        return $this->documentFactory->makeOne($class, $result['hits']['hits'][0]);
+    }
+
+    /**
+     * @param string $class
+     * @param $id
+     * @return DocumentInterface
+     */
+    public function findOneById(string $class, $id)
+    {
+        $index = $this->indexList->getIndexOfClass($class);
 
         $params = [
             'index' => $index->getIndex(),
-            'type' => $index->getType(),
+            'type'  => $index->getType(),
+            'id'    => $id,
         ];
 
-        if (isset($criteria['id'])) {
-            $params['id'] = $criteria['id'];
+        $result = $this->client->get($params);
 
-            return $this->client->get($params);
-        }
-
-        $params['body'] = [
-            'query' => [
-                'match' => $criteria,
-            ],
-        ];
-
-        return $this->client->search($params);
+        return $this->documentFactory->makeOne($class, $result);
     }
 }

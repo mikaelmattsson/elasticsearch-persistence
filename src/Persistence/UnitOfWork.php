@@ -3,7 +3,7 @@
 namespace Seek\Persistence;
 
 use Seek\Document\DocumentInterface;
-use Seek\Index\IndexManager;
+use Seek\Index\IndexList;
 
 class UnitOfWork
 {
@@ -23,15 +23,15 @@ class UnitOfWork
     protected $persistedStates = [];
 
     /**
-     * @var IndexManager
+     * @var IndexList
      */
     private $indexManager;
 
     /**
      * UnitOfWork constructor.
-     * @param IndexManager $indexManager
+     * @param IndexList $indexManager
      */
-    public function __construct(IndexManager $indexManager)
+    public function __construct(IndexList $indexManager)
     {
         $this->indexManager = $indexManager;
     }
@@ -138,7 +138,7 @@ class UnitOfWork
      * @param $object
      * @return bool
      */
-    public function contains($object)
+    public function contains(DocumentInterface $object)
     {
         return isset($this->saveStack[$object->getId()])
         || isset($this->removeStack[$object->getId()]);

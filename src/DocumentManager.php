@@ -4,9 +4,10 @@ namespace Seek;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Elasticsearch\Client;
+use Elasticsearch\ClientBuilder;
 use Seek\Document\DocumentInterface;
 use Seek\Index\IndexLocatorInterface;
-use Seek\Index\IndexManager;
+use Seek\Index\IndexList;
 use Seek\Index\SimpleIndexLocator;
 use Seek\Persistence\PersistenceService;
 use Seek\Persistence\UnitOfWork;
@@ -21,9 +22,9 @@ class DocumentManager implements ObjectManager
     protected $persistenceService;
 
     /**
-     * @var IndexManager
+     * @var IndexList
      */
-    protected $indexManager;
+    protected $indexList;
 
     /**
      * @var SimpleRepositoryLocator
@@ -38,26 +39,26 @@ class DocumentManager implements ObjectManager
     /**
      * @var Client
      */
-    private $client;
+    protected $client;
 
     /**
      * @var IndexLocatorInterface
      */
-    private $indexLocator;
+    protected $indexLocator;
 
     /**
      * DocumentManager constructor.
      *
-     * @param Client                $client
+     * @param array                $hosts
      * @param IndexLocatorInterface $indexLocator
      */
-    public function __construct(Client $client, IndexLocatorInterface $indexLocator = null)
+    public function __construct(array $hosts, IndexLocatorInterface $indexLocator = null)
     {
-        $this->client = $client;
+        $this->client = ClientBuilder::create()->setHosts($hosts)->build();
         $this->indexLocator = $indexLocator ? $indexLocator : new SimpleIndexLocator();
-        $this->indexManager = new IndexManager($this->indexLocator);
-        $this->unitOfWork = new UnitOfWork($this->indexManager);
-        $this->persistenceService = new PersistenceService($this->unitOfWork, $client, $this->indexManager);
+        $this->indexList = new IndexList($this->indexLocator);
+        $this->unitOfWork = new UnitOfWork($this->indexList);
+        $this->persistenceService = new PersistenceService($this->unitOfWork, $this->client, $this->indexList);
         $this->repositoryLocator = new SimpleRepositoryLocator($this);
     }
 
@@ -245,7 +246,7 @@ class DocumentManager implements ObjectManager
      */
     public function contains($object)
     {
-        $this->unitOfWork->contains($object);
+        return $this->unitOfWork->contains($object);
     }
 
     /**
@@ -254,5 +255,17 @@ class DocumentManager implements ObjectManager
     public function getPersistenceService()
     {
         return $this->persistenceService;
+    }
+
+    /**
+     * @param string $class
+     */
+    public function prepareIndex($class)
+    {
+        $index = $this->indexList->getIndexOfClass($class);
+        
+        $this->client->indices()->create([
+            'index' => $index->getIndex(),
+        ]);
     }
 }

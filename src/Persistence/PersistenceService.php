@@ -3,15 +3,16 @@
 namespace Seek\Persistence;
 
 use Elasticsearch\Client;
+use Seek\Collection\DocumentCollection;
 use Seek\Document\DocumentInterface;
-use Seek\Index\IndexManager;
+use Seek\Index\IndexList;
 
 class PersistenceService
 {
     /**
      * @var UnitOfWork
      */
-    private $unitOfWork;
+    protected $unitOfWork;
 
     /**
      * @var DocumentSaveHandler
@@ -26,16 +27,20 @@ class PersistenceService
     /**
      * @param UnitOfWork $unitOfWork
      * @param Client $client
-     * @param IndexManager $indexManager
+     * @param IndexList $indexList
      */
-    public function __construct(UnitOfWork $unitOfWork, Client $client, IndexManager $indexManager)
+    public function __construct(UnitOfWork $unitOfWork, Client $client, IndexList $indexList)
     {
         $this->unitOfWork = $unitOfWork;
-        $this->documentSaveHandler = new DocumentSaveHandler($client, $indexManager);
-        $this->documentFindHandler = new DocumentFindHandler($client, $indexManager);
         $this->documentFactory = new DocumentFactory();
+        $this->documentSaveHandler = new DocumentSaveHandler($client, $indexList);
+        $this->documentFindHandler = new DocumentFindHandler($client, $indexList, $this->documentFactory);
+        $this->indexDeleteHandler = new IndexDeleteHandler($client, $indexList);
     }
 
+    /**
+     *
+     */
     public function save()
     {
         $this->documentSaveHandler->save($this->unitOfWork);
@@ -48,9 +53,9 @@ class PersistenceService
      * @param array $orderBy
      * @param null $limit
      * @param null $offset
-     * @return array
+     * @return DocumentInterface[]|DocumentCollection
      */
-    public function find(
+    public function findBy(
         string $documentClass,
         string $collectionClass,
         array $query,
@@ -58,10 +63,10 @@ class PersistenceService
         $limit = null,
         $offset = null
     ) {
-        $result = $this->documentFindHandler->find($documentClass, $query, $orderBy, $limit, $offset);
+        $result = $this->documentFindHandler->findByProperties($documentClass, $collectionClass,
+            $query, $orderBy, $limit, $offset);
 
-
-        return;
+        return $result;
     }
 
     /**
@@ -69,10 +74,20 @@ class PersistenceService
      * @param array $criteria
      * @return DocumentInterface
      */
-    public function findOne(string $documentClass, array $criteria)
+    public function findOneBy(string $documentClass, array $criteria)
     {
-        $result = $this->documentFindHandler->find($documentClass, $criteria);
+        if (isset($criteria['id'])) {
+            return $this->documentFindHandler->findOneById($documentClass, $criteria['id']);
+        }
 
-        return $this->documentFactory->makeOne($documentClass, $result);
+        return $this->documentFindHandler->findOneByProperties($documentClass, $criteria);
+    }
+
+    /**
+     *
+     */
+    public function deleteAllIndexes()
+    {
+        $this->indexDeleteHandler->deleteAllIndexes();
     }
 }

@@ -45,7 +45,7 @@ abstract class AbstractRepository implements ObjectRepository
      */
     public function find($id)
     {
-        $this->findOneBy(['id' => $id]);
+        return $this->findOneBy(['id' => $id]);
     }
 
     /**
@@ -76,7 +76,7 @@ abstract class AbstractRepository implements ObjectRepository
      */
     public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
     {
-        $this->documentManager->getPersistenceService()->find(
+        $this->documentManager->getPersistenceService()->findBy(
             $this->documentClass,
             $this->documentCollectionClass,
             $criteria,
@@ -95,7 +95,7 @@ abstract class AbstractRepository implements ObjectRepository
      */
     public function findOneBy(array $criteria)
     {
-        $this->documentManager->getPersistenceService()->findOne(
+        return $this->documentManager->getPersistenceService()->findOneBy(
             $this->documentClass,
             $criteria
         );

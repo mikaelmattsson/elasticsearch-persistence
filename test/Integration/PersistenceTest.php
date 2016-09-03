@@ -4,12 +4,15 @@ namespace SeekTest\Integration;
 
 use Seek\Repository\DefaultRepository;
 use SeekTest\Domain\User\User;
-use Ramsey\Uuid\Uuid;
 
 class PersistenceTest extends AbstractIntegrationTest
 {
     public function testSave()
     {
+        $this->documentManager->getPersistenceService()->deleteAllIndexes();
+
+        $this->documentManager->prepareIndex(User::class);
+
         $user = new User([
             'name' => 'Mr Potato Head',
             'email' => 'potato@potatohead.com',
@@ -18,6 +21,8 @@ class PersistenceTest extends AbstractIntegrationTest
         $this->documentManager->persist($user);
 
         $this->documentManager->flush();
+
+        sleep(1); // we cant perform searches until Elasticsearch has indexed the data.
 
         return $user->getId();
     }
@@ -34,11 +39,9 @@ class PersistenceTest extends AbstractIntegrationTest
 
         $user = $repository->find($id);
 
-        var_dump($user); die();
-
         $this->assertInstanceOf(User::class, $user);
 
-        $this->assertEquals('Mr Potato Head', $user->getName());
+        $this->assertEquals('Mr Potato Head', $user->get('name'));
     }
 
     /**
@@ -48,7 +51,7 @@ class PersistenceTest extends AbstractIntegrationTest
     public function testFindByName($id)
     {
         $repository = $this->documentManager->getRepository(User::class);
-        $user = $repository->findBy(['name' => 'Mr Potato Head']);
+        $user = $repository->findOneBy(['name' => 'Mr Potato Head']);
 
         $this->assertInstanceOf(User::class, $user);
         $this->assertEquals($id, $user->getId());

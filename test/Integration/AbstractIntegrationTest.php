@@ -16,7 +16,7 @@ abstract class AbstractIntegrationTest extends \PHPUnit_Framework_TestCase
     {
         $hosts = ['elasticsearch']; // docker container host name.
 
-        $this->documentManager = new DocumentManager(ClientBuilder::create()->setHosts($hosts)->build());
+        $this->documentManager = new DocumentManager($hosts);
 
         parent::setUp();
     }

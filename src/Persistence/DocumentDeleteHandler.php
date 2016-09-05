@@ -6,7 +6,7 @@ use Elasticsearch\Client;
 use Seek\Document\DocumentInterface;
 use Seek\Index\IndexList;
 
-class DocumentSaveHandler
+class DocumentDeleteHandler
 {
     /**
      * @var Client
@@ -19,9 +19,8 @@ class DocumentSaveHandler
     private $indexList;
 
     /**
-     * DocumentSaveHandler constructor.
-     *
-     * @param Client       $client
+     * DocumentDeleteHandler constructor.
+     * @param Client $client
      * @param IndexList $indexList
      */
     public function __construct(Client $client, IndexList $indexList)
@@ -33,7 +32,7 @@ class DocumentSaveHandler
     /**
      * @param DocumentInterface[] $documents
      */
-    public function save(array $documents)
+    public function delete(array $documents)
     {
         $body = [];
         $i = 0;
@@ -41,14 +40,12 @@ class DocumentSaveHandler
             $index = $this->indexList->getIndexOfDocument($document);
 
             $body[] = [
-                'index' => [
+                'delete' => [
                     '_index' => $index->getIndex(),
                     '_type' => $index->getType(),
                     '_id' => $document->getId(),
                 ],
             ];
-
-            $body[] = $index->serialize($document);
 
             if (++$i % 1000 == 0) {
                 $this->client->bulk(['body' => $body]);
@@ -60,4 +57,5 @@ class DocumentSaveHandler
             $this->client->bulk(['body' => $body]);
         }
     }
+
 }

@@ -182,8 +182,7 @@ class DocumentManager implements ObjectManager
     public function flush()
     {
         $this->persistenceService->save();
-
-        // TODO: Implement removal.
+        $this->persistenceService->delete();
     }
 
     /**

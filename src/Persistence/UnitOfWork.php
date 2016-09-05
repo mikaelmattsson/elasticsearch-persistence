@@ -88,6 +88,14 @@ class UnitOfWork
     }
 
     /**
+     * @return DocumentInterface[]
+     */
+    public function getDocumentsForRemoval()
+    {
+        return $this->removeStack;
+    }
+
+    /**
      * @param DocumentInterface $object
      */
     protected function saveState(DocumentInterface $object)

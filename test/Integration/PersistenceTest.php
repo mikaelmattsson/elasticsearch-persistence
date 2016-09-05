@@ -13,7 +13,7 @@ class PersistenceTest extends AbstractIntegrationTest
 
         $this->documentManager->prepareIndex(User::class);
 
-        $user = new User([
+        $user = User::create([
             'name' => 'Mr Potato Head',
             'email' => 'potato@potatohead.com',
         ]);
@@ -65,5 +65,14 @@ class PersistenceTest extends AbstractIntegrationTest
      */
     public function testRemove($id)
     {
+        $repository = $this->documentManager->getRepository(User::class);
+        $user = $repository->find($id);
+
+        $this->documentManager->remove($user);
+        $this->documentManager->flush();
+
+        $userAgain = $repository->find($id);
+
+        $this->assertNull($userAgain);
     }
 }

@@ -35,6 +35,7 @@ class PersistenceService
         $this->documentFactory = new DocumentFactory();
         $this->documentSaveHandler = new DocumentSaveHandler($client, $indexList);
         $this->documentFindHandler = new DocumentFindHandler($client, $indexList, $this->documentFactory);
+        $this->documentDeleteHandler = new DocumentDeleteHandler($client, $indexList);
         $this->indexDeleteHandler = new IndexDeleteHandler($client, $indexList);
     }
 
@@ -43,7 +44,15 @@ class PersistenceService
      */
     public function save()
     {
-        $this->documentSaveHandler->save($this->unitOfWork);
+        $this->documentSaveHandler->save($this->unitOfWork->getDocumentsForSave());
+    }
+
+    /**
+     * 
+     */
+    public function delete()
+    {
+        $this->documentDeleteHandler->delete($this->unitOfWork->getDocumentsForRemoval());
     }
 
     /**
@@ -90,4 +99,6 @@ class PersistenceService
     {
         $this->indexDeleteHandler->deleteAllIndexes();
     }
+
+
 }

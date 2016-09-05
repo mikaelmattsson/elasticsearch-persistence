@@ -3,6 +3,7 @@
 namespace Seek\Repository;
 
 use Doctrine\Common\Persistence\ObjectRepository;
+use Seek\Document\DocumentInterface;
 use Seek\DocumentManager;
 
 /**
@@ -41,7 +42,7 @@ abstract class AbstractRepository implements ObjectRepository
      *
      * @param mixed $id The identifier.
      *
-     * @return object|null The object.
+     * @return DocumentInterface|null The object.
      */
     public function find($id)
     {
@@ -51,7 +52,7 @@ abstract class AbstractRepository implements ObjectRepository
     /**
      * Finds all objects in the repository.
      *
-     * @return array The objects.
+     * @return DocumentInterface[] The objects.
      */
     public function findAll()
     {
@@ -70,7 +71,7 @@ abstract class AbstractRepository implements ObjectRepository
      * @param int|null $limit
      * @param int|null $offset
      *
-     * @return array The objects.
+     * @return DocumentInterface[] The objects.
      *
      * @throws \UnexpectedValueException
      */
@@ -91,7 +92,7 @@ abstract class AbstractRepository implements ObjectRepository
      *
      * @param array $criteria The criteria.
      *
-     * @return object|null The object.
+     * @return DocumentInterface|null The object.
      */
     public function findOneBy(array $criteria)
     {

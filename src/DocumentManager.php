@@ -58,7 +58,7 @@ class DocumentManager implements ObjectManager
         $this->indexLocator = $indexLocator ? $indexLocator : new SimpleIndexLocator();
         $this->indexList = new IndexList($this->indexLocator);
         $this->unitOfWork = new UnitOfWork($this->indexList);
-        $this->persistenceService = new PersistenceService($this->unitOfWork, $this->client, $this->indexList);
+        $this->persistenceService = new PersistenceService($this->client, $this->indexList);
         $this->repositoryLocator = new SimpleRepositoryLocator($this);
     }
 
@@ -181,8 +181,8 @@ class DocumentManager implements ObjectManager
      */
     public function flush()
     {
-        $this->persistenceService->save();
-        $this->persistenceService->delete();
+        $this->persistenceService->save($this->unitOfWork->getDocumentsForSave());
+        $this->persistenceService->delete($this->unitOfWork->getDocumentsForRemoval());
     }
 
     /**
@@ -249,14 +249,6 @@ class DocumentManager implements ObjectManager
     }
 
     /**
-     * @return PersistenceService
-     */
-    public function getPersistenceService()
-    {
-        return $this->persistenceService;
-    }
-
-    /**
      * @param string $class
      */
     public function prepareIndex($class)
@@ -266,5 +258,41 @@ class DocumentManager implements ObjectManager
         $this->client->indices()->create([
             'index' => $index->getIndex(),
         ]);
+    }
+
+    /**
+     * Save a document immediately without tracking it.
+     *
+     * @param DocumentInterface|DocumentInterface[] $document
+     */
+    public function save($document)
+    {
+        if ($document instanceof DocumentInterface) {
+            $this->persistenceService->save([$document]);
+        } else {
+            $this->persistenceService->save($document);
+        }
+    }
+
+    /**
+     * Delete a document immediately without tracking it.
+     *
+     * @param DocumentInterface|DocumentInterface[] $document
+     */
+    public function delete($document)
+    {
+        if ($document instanceof DocumentInterface) {
+            $this->persistenceService->delete([$document]);
+        } else {
+            $this->persistenceService->delete($document);
+        }
+    }
+
+    /**
+     * @return PersistenceService
+     */
+    public function getPersistenceService()
+    {
+        return $this->persistenceService;
     }
 }

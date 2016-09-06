@@ -10,11 +10,6 @@ use Seek\Index\IndexList;
 class PersistenceService
 {
     /**
-     * @var UnitOfWork
-     */
-    protected $unitOfWork;
-
-    /**
      * @var DocumentSaveHandler
      */
     protected $documentSaveHandler;
@@ -29,9 +24,8 @@ class PersistenceService
      * @param Client $client
      * @param IndexList $indexList
      */
-    public function __construct(UnitOfWork $unitOfWork, Client $client, IndexList $indexList)
+    public function __construct(Client $client, IndexList $indexList)
     {
-        $this->unitOfWork = $unitOfWork;
         $this->documentFactory = new DocumentFactory();
         $this->documentSaveHandler = new DocumentSaveHandler($client, $indexList);
         $this->documentFindHandler = new DocumentFindHandler($client, $indexList, $this->documentFactory);
@@ -40,19 +34,19 @@ class PersistenceService
     }
 
     /**
-     *
+     * @param DocumentInterface[] $documents
      */
-    public function save()
+    public function save($documents)
     {
-        $this->documentSaveHandler->save($this->unitOfWork->getDocumentsForSave());
+        $this->documentSaveHandler->save($documents);
     }
 
     /**
-     * 
+     * @param DocumentInterface[] $documents
      */
-    public function delete()
+    public function delete($documents)
     {
-        $this->documentDeleteHandler->delete($this->unitOfWork->getDocumentsForRemoval());
+        $this->documentDeleteHandler->delete($documents);
     }
 
     /**
@@ -99,6 +93,4 @@ class PersistenceService
     {
         $this->indexDeleteHandler->deleteAllIndexes();
     }
-
-
 }

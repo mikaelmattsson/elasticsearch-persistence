@@ -57,5 +57,4 @@ class DocumentDeleteHandler
             $this->client->bulk(['body' => $body]);
         }
     }
-
 }

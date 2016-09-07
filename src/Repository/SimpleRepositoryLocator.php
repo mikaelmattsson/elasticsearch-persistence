@@ -26,7 +26,7 @@ class SimpleRepositoryLocator implements RepositoryLocatorInterface
         $this->documentManager = $documentManager;
     }
 
-    public function get(string $documentClassName) : DefaultRepository
+    public function get(string $documentClassName) : AbstractRepository
     {
         if (isset($this->repositories[$documentClassName])) {
             return $this->repositories[$documentClassName];

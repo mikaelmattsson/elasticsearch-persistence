@@ -68,7 +68,7 @@ class DocumentFindHandler
             ],
         ]);
 
-        return $this->documentFactory->makeMany($class, $collectionClass, $result);
+        return $this->documentFactory->makeMany($class, $collectionClass, $result, $index);
     }
 
     /**
@@ -94,7 +94,7 @@ class DocumentFindHandler
             return null;
         }
 
-        return $this->documentFactory->makeOne($class, $result['hits']['hits'][0]);
+        return $this->documentFactory->makeOne($class, $result['hits']['hits'][0], $index);
     }
 
     /**
@@ -118,6 +118,6 @@ class DocumentFindHandler
             return null;
         }
 
-        return $this->documentFactory->makeOne($class, $result);
+        return $this->documentFactory->makeOne($class, $result, $index);
     }
 }

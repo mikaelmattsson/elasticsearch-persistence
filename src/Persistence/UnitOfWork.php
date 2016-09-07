@@ -95,6 +95,13 @@ class UnitOfWork
         return $this->removeStack;
     }
 
+    public function persistMany(array $result)
+    {
+        foreach ($result as $item) {
+            $this->persist($item);
+        }
+    }
+
     /**
      * @param DocumentInterface $object
      */

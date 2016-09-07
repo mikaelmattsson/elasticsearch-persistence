@@ -58,7 +58,7 @@ class DocumentManager implements ObjectManager
         $this->indexLocator = $indexLocator ? $indexLocator : new SimpleIndexLocator();
         $this->indexList = new IndexList($this->indexLocator);
         $this->unitOfWork = new UnitOfWork($this->indexList);
-        $this->persistenceService = new PersistenceService($this->client, $this->indexList);
+        $this->persistenceService = new PersistenceService($this->client, $this->indexList, $this->unitOfWork);
         $this->repositoryLocator = new SimpleRepositoryLocator($this);
     }
 

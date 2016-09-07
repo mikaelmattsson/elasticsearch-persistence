@@ -20,17 +20,23 @@ class PersistenceService
     protected $documentFindHandler;
 
     /**
+     * @var UnitOfWork
+     */
+    private $unitOfWork;
+
+    /**
      * @param UnitOfWork $unitOfWork
      * @param Client $client
      * @param IndexList $indexList
      */
-    public function __construct(Client $client, IndexList $indexList)
+    public function __construct(Client $client, IndexList $indexList, UnitOfWork $unitOfWork)
     {
         $this->documentFactory = new DocumentFactory();
         $this->documentSaveHandler = new DocumentSaveHandler($client, $indexList);
         $this->documentFindHandler = new DocumentFindHandler($client, $indexList, $this->documentFactory);
         $this->documentDeleteHandler = new DocumentDeleteHandler($client, $indexList);
         $this->indexDeleteHandler = new IndexDeleteHandler($client, $indexList);
+        $this->unitOfWork = $unitOfWork;
     }
 
     /**
@@ -69,6 +75,8 @@ class PersistenceService
         $result = $this->documentFindHandler->findByProperties($documentClass, $collectionClass,
             $query, $orderBy, $limit, $offset);
 
+        $this->unitOfWork->persistMany($result);
+
         return $result;
     }
 
@@ -80,10 +88,22 @@ class PersistenceService
     public function findOneBy(string $documentClass, array $criteria)
     {
         if (isset($criteria['id'])) {
-            return $this->documentFindHandler->findOneById($documentClass, $criteria['id']);
+            $result = $this->documentFindHandler->findOneById($documentClass, $criteria['id']);
+
+            if ($result) {
+                $this->unitOfWork->persist($result);
+            }
+
+            return $result;
         }
 
-        return $this->documentFindHandler->findOneByProperties($documentClass, $criteria);
+        $result = $this->documentFindHandler->findOneByProperties($documentClass, $criteria);
+
+        if ($result) {
+            $this->unitOfWork->persist($result);
+        }
+
+        return $result;
     }
 
     /**

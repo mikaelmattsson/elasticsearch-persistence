@@ -36,4 +36,12 @@ interface IndexInterface
      * @return DocumentInterface
      */
     public function deserialize(array $data, string $id) : DocumentInterface;
+
+    /**
+     * An array of mappings to be sent to
+     * https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
+     *
+     * @return array
+     */
+    public function getMappings() : array;
 }

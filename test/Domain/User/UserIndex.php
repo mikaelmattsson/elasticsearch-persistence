@@ -30,7 +30,7 @@ class UserIndex implements IndexInterface
     public function serialize(DocumentInterface $document) : array
     {
         return [
-            'name' => $document->get('name'),
+            'name'  => $document->get('name'),
             'email' => $document->get('email'),
         ];
     }
@@ -43,5 +43,31 @@ class UserIndex implements IndexInterface
     public function deserialize(array $data, string $id) : DocumentInterface
     {
         return User::create($data, $id);
+    }
+
+    /**
+     * @return array
+     */
+    public function getMappings() : array
+    {
+        return [
+            'mappings' => [
+                $this->getType() => [
+                    '_source'    => [
+                        'enabled' => true,
+                    ],
+                    'properties' => [
+                        'name'  => [
+                            'type'  => 'string',
+                            'index' => 'not_analyzed',
+                        ],
+                        'email' => [
+                            'type'  => 'string',
+                            'index' => 'not_analyzed',
+                        ],
+                    ],
+                ],
+            ],
+        ];
     }
 }

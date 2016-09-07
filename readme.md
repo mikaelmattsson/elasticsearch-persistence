@@ -65,6 +65,32 @@ class UserIndex implements \Seek\Index\IndexInterface
     {
         return User::create($data, $id);
     }
+
+    /**
+     * @return array
+     */
+    public function getMappings() : array
+    {
+        return [
+            'mappings' => [
+                $this->getType() => [
+                    '_source'    => [
+                        'enabled' => true,
+                    ],
+                    'properties' => [
+                        'name'  => [
+                            'type'  => 'string',
+                            'index' => 'not_analyzed',
+                        ],
+                        'email' => [
+                            'type'  => 'string',
+                            'index' => 'not_analyzed',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+    }
 }
 ```
 

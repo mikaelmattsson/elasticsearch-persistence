@@ -26,7 +26,7 @@ class User extends \Seek\Document\Document
 }
 
 
-class UserIndex implements IndexInterface
+class UserIndex implements \Seek\Index\IndexInterface
 {
     /**
      * @return string

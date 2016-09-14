@@ -144,7 +144,7 @@ $documentManager->flush();
                   "lt" => "1999",
                ],
             ],
-        },
+        ],
         "size" => 10,
     ]));
     

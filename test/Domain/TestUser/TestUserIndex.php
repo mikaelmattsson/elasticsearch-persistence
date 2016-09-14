@@ -1,18 +1,18 @@
 <?php
 
-namespace SeekTest\Domain\User;
+namespace SeekTest\Domain\TestUser;
 
 use Seek\Document\DocumentInterface;
 use Seek\Index\IndexInterface;
 
-class UserIndex implements IndexInterface
+class TestUserIndex implements IndexInterface
 {
     /**
      * @return string
      */
     public function getIndex() : string
     {
-        return 'user';
+        return 'test_user';
     }
 
     /**
@@ -20,11 +20,11 @@ class UserIndex implements IndexInterface
      */
     public function getType() : string
     {
-        return 'user';
+        return 'test_user';
     }
 
     /**
-     * @param DocumentInterface|User $document
+     * @param DocumentInterface|TestUser $document
      * @return array
      */
     public function serialize(DocumentInterface $document) : array
@@ -38,11 +38,11 @@ class UserIndex implements IndexInterface
     /**
      * @param array $data
      * @param string $id
-     * @return DocumentInterface|User
+     * @return DocumentInterface|TestUser
      */
     public function deserialize(array $data, string $id) : DocumentInterface
     {
-        return User::create($data, $id);
+        return TestUser::create($data, $id);
     }
 
     /**

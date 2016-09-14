@@ -3,6 +3,7 @@
 namespace Seek\Persistence;
 
 use Elasticsearch\Client;
+use Elasticsearch\Common\Exceptions\Missing404Exception;
 use Seek\Index\IndexList;
 
 class IndexDeleteHandler
@@ -32,5 +33,18 @@ class IndexDeleteHandler
     public function deleteAllIndexes()
     {
         return $this->client->indices()->delete(['index' => '*']);
+    }
+
+    public function deleteIndex($indexName, $ignoreMissing)
+    {
+        try {
+            return $this->client->indices()->delete(['index' => $indexName]);
+        } catch (Missing404Exception $e) {
+            if ($ignoreMissing) {
+                return false;
+            }
+
+            throw $e;
+        }
     }
 }

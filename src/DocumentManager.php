@@ -295,4 +295,20 @@ class DocumentManager implements ObjectManager
     {
         return $this->persistenceService;
     }
+
+    /**
+     * @return Client
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
+
+    /**
+     * @return UnitOfWork
+     */
+    public function getUnitOfWork()
+    {
+        return $this->unitOfWork;
+    }
 }

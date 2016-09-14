@@ -32,7 +32,7 @@ class DocumentFactory
     public function makeMany($class, $collectionClass, $result, IndexInterface $index)
     {
         $documents = [];
-        if (!count($result['hits']['hits']) === 0) {
+        if (count($result['hits']['hits']) > 0) {
             foreach ($result['hits']['hits'] as $row) {
                 $documents[] = $this->makeOne($class, $row, $index);
             }

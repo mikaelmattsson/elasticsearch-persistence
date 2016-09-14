@@ -1,10 +1,10 @@
 <?php
 
-namespace SeekTest\Domain\User;
+namespace SeekTest\Domain\TestUser;
 
 use Seek\Document\Document;
 
-class User extends Document
+class TestUser extends Document
 {
     /**
      * @param array $data

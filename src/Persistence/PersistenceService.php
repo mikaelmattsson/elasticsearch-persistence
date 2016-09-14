@@ -4,6 +4,7 @@ namespace Seek\Persistence;
 
 use Elasticsearch\Client;
 use Seek\Collection\DocumentCollection;
+use Seek\Criteria\Criteria;
 use Seek\Document\DocumentInterface;
 use Seek\Index\IndexList;
 
@@ -53,6 +54,9 @@ class PersistenceService
     public function delete($documents)
     {
         $this->documentDeleteHandler->delete($documents);
+        foreach ($documents as $document) {
+            $this->unitOfWork->detach($document);
+        }
     }
 
     /**
@@ -82,13 +86,13 @@ class PersistenceService
 
     /**
      * @param string $documentClass
-     * @param array $criteria
+     * @param array $properties
      * @return DocumentInterface
      */
-    public function findOneBy(string $documentClass, array $criteria)
+    public function findOneBy(string $documentClass, array $properties)
     {
-        if (isset($criteria['id'])) {
-            $result = $this->documentFindHandler->findOneById($documentClass, $criteria['id']);
+        if (isset($properties['id'])) {
+            $result = $this->documentFindHandler->findOneById($documentClass, $properties['id']);
 
             if ($result) {
                 $this->unitOfWork->persist($result);
@@ -97,7 +101,7 @@ class PersistenceService
             return $result;
         }
 
-        $result = $this->documentFindHandler->findOneByProperties($documentClass, $criteria);
+        $result = $this->documentFindHandler->findOneByProperties($documentClass, $properties);
 
         if ($result) {
             $this->unitOfWork->persist($result);
@@ -112,5 +116,25 @@ class PersistenceService
     public function deleteAllIndexes()
     {
         $this->indexDeleteHandler->deleteAllIndexes();
+    }
+
+    /**
+     * @param string $indexName
+     * @param bool $ignoreMissing
+     */
+    public function deleteIndex($indexName, $ignoreMissing = false)
+    {
+        $this->indexDeleteHandler->deleteIndex($indexName, $ignoreMissing);
+    }
+
+    /**
+     * @param string $documentClass
+     * @param string $documentCollectionClass
+     * @param Criteria $criteria
+     * @return DocumentCollection|\Seek\Document\DocumentInterface[]
+     */
+    public function search($documentClass, $documentCollectionClass, Criteria $criteria)
+    {
+        return $this->documentFindHandler->search($documentClass, $documentCollectionClass, $criteria);
     }
 }

@@ -5,6 +5,7 @@ namespace Seek\Persistence;
 use Elasticsearch\Client;
 use Elasticsearch\Common\Exceptions\Missing404Exception;
 use Seek\Collection\DocumentCollection;
+use Seek\Criteria\Criteria;
 use Seek\Document\DocumentInterface;
 use Seek\Index\IndexList;
 
@@ -111,7 +112,7 @@ class DocumentFindHandler
             'type'  => $index->getType(),
             'id'    => $id,
         ];
-        
+
         try {
             $result = $this->client->get($params);
         } catch (Missing404Exception $exception) {
@@ -119,5 +120,24 @@ class DocumentFindHandler
         }
 
         return $this->documentFactory->makeOne($class, $result, $index);
+    }
+
+    /**
+     * @param string $class
+     * @param string $collectionClass
+     * @param Criteria $criteria
+     * @return DocumentCollection|\Seek\Document\DocumentInterface[]
+     */
+    public function search($class, $collectionClass, Criteria $criteria)
+    {
+        $index = $this->indexList->getIndexOfClass($class);
+
+        $result = $this->client->search([
+            'index' => $index->getIndex(),
+            'type'  => $index->getType(),
+            'body'  => $criteria->getBody(),
+        ]);
+
+        return $this->documentFactory->makeMany($class, $collectionClass, $result, $index);
     }
 }

@@ -14,11 +14,9 @@ class PersistenceServiceProvider extends ServiceProvider
         $app = $this->app;
 
         $app->singleton(DocumentManager::class, function (Application $app) {
-            $hosts = $app['config']->get('elasticsearch.hosts');
+            $hosts = $app['config']->get('database.elasticsearch.hosts');
 
-            return new DocumentManager(
-                ClientBuilder::create()->setHosts($hosts)->build()
-            );
+            return new DocumentManager($hosts);
         });
     }
 }

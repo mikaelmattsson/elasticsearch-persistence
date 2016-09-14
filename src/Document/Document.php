@@ -28,21 +28,39 @@ abstract class Document implements DocumentInterface
         $this->properties = $data;
     }
 
+    /**
+     * @param array $properties
+     * @param null $id
+     * @return static
+     */
     public static function create(array $properties, $id = null)
     {
         return new static($properties, $id);
     }
 
+    /**
+     * @return string
+     */
     public function getId() : string
     {
         return $this->id;
     }
 
-    public function get($property)
+    /**
+     * @param string $property
+     * @param mixed $default
+     * @return mixed
+     */
+    public function get($property, $default = null)
     {
-        return $this->properties[$property];
+        return isset($this->properties[$property]) ? $this->properties[$property] : $default;
     }
 
+    /**
+     * @param string $property
+     * @param mixed $value
+     * @return $this
+     */
     public function set($property, $value)
     {
         $this->properties[$property] = $value;
@@ -50,6 +68,9 @@ abstract class Document implements DocumentInterface
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getProperties() : array
     {
         return $this->properties;

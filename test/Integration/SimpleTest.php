@@ -2,37 +2,74 @@
 
 namespace SeekTest\Integration;
 
-use SeekTest\Domain\User\User;
+use Seek\Repository\DefaultRepository;
+use SeekTest\Domain\TestPet\TestPet;
 
 class SimpleTest extends AbstractIntegrationTest
 {
     public function testSave()
     {
-        $this->documentManager->getPersistenceService()->deleteAllIndexes();
+        $this->documentManager->getPersistenceService()->deleteIndex('test_pet', true);
 
-        $this->documentManager->prepareIndex(User::class);
+        $this->documentManager->prepareIndex(TestPet::class);
 
-        $repository = $this->documentManager->getRepository(User::class);
-
-        $user = User::create([
-            'name' => 'Mr Potato Head',
-            'email' => 'potato@potatohead.com',
+        $pet = TestPet::create([
+            'name' => 'Lassie',
         ]);
 
-        $this->documentManager->save($user);
+        $this->documentManager->save($pet);
 
-        $isTracked = $this->documentManager->contains($user);
+        sleep(1); // we cant perform searches until Elasticsearch has indexed the data. (refresh_interval)
 
-        $this->assertFalse($isTracked, 'Should not be tracked');
+        return $pet->getId();
+    }
 
-        $user = $repository->find($user->getId());
+    /**
+     * @depends testSave
+     * @param $id
+     */
+    public function testFind($id)
+    {
+        $repository = $this->documentManager->getRepository(TestPet::class);
 
-        $this->assertInstanceOf(User::class, $user, 'User should have been saved');
+        $this->assertInstanceOf(DefaultRepository::class, $repository);
 
-        $this->documentManager->delete($user);
+        $user = $repository->find($id);
 
-        $user = $repository->find($user->getId());
+        $this->assertInstanceOf(TestPet::class, $user);
 
-        $this->assertNull($user, 'User should have been deleted');
+        $this->assertEquals('Lassie', $user->get('name'));
+    }
+
+    /**
+     * @depends testSave
+     * @param $id
+     */
+    public function testFindByName($id)
+    {
+        $repository = $this->documentManager->getRepository(TestPet::class);
+        $user = $repository->findOneBy(['name' => 'Lassie']);
+
+        $this->assertInstanceOf(TestPet::class, $user);
+        $this->assertEquals($id, $user->getId());
+
+        return $id;
+    }
+
+    /**
+     * @depends testSave
+     * @param $id
+     */
+    public function testRemove($id)
+    {
+        $repository = $this->documentManager->getRepository(TestPet::class);
+        $user = $repository->find($id);
+
+        $this->documentManager->remove($user);
+        $this->documentManager->flush();
+
+        $userAgain = $repository->find($id);
+
+        $this->assertNull($userAgain);
     }
 }

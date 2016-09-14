@@ -43,8 +43,8 @@ class UnitOfWork
     public function persist(DocumentInterface $object)
     {
         $this->updateState($object, 'new');
-        unset($this->removeStack[$object->getId()]);
-        $this->saveStack[$object->getId()] = $object;
+        unset($this->removeStack[$this->docHash($object)]);
+        $this->saveStack[$this->docHash($object)] = $object;
     }
 
     /**
@@ -52,8 +52,8 @@ class UnitOfWork
      */
     public function remove(DocumentInterface $object)
     {
-        unset($this->saveStack[$object->getId()]);
-        $this->removeStack[$object->getId()] = $object;
+        unset($this->saveStack[$this->docHash($object)]);
+        $this->removeStack[$this->docHash($object)] = $object;
     }
 
     /**
@@ -70,8 +70,8 @@ class UnitOfWork
      */
     public function detach(DocumentInterface $object)
     {
-        unset($this->saveStack[$object->getId()]);
-        unset($this->removeStack[$object->getId()]);
+        unset($this->saveStack[$this->docHash($object)]);
+        unset($this->removeStack[$this->docHash($object)]);
     }
 
     /**
@@ -155,7 +155,44 @@ class UnitOfWork
      */
     public function contains(DocumentInterface $object)
     {
-        return isset($this->saveStack[$object->getId()])
-        || isset($this->removeStack[$object->getId()]);
+        return isset($this->saveStack[$this->docHash($object)])
+        || isset($this->removeStack[$this->docHash($object)]);
+    }
+
+    /**
+     * @param DocumentInterface $object
+     * @return string
+     */
+    protected function docHash(DocumentInterface $object)
+    {
+        return $this->hash(get_class($object), $object->getId());
+    }
+
+    /**
+     * @param string $class
+     * @param string $id
+     * @return string
+     */
+    protected function hash($class, $id)
+    {
+        return $class.$id;
+    }
+
+    /**
+     * Find a document in the persisted stack.
+     *
+     * @param $class
+     * @param $id
+     * @return null|DocumentInterface
+     */
+    public function find($class, $id)
+    {
+        $hash = $this->hash($class, $id);
+
+        if (isset($this->saveStack[$hash])) {
+            return $this->saveStack[$hash];
+        }
+
+        return null;
     }
 }

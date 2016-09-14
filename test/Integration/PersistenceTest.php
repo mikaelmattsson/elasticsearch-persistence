@@ -3,17 +3,18 @@
 namespace SeekTest\Integration;
 
 use Seek\Repository\DefaultRepository;
-use SeekTest\Domain\User\User;
+use SeekTest\Domain\TestUser\TestUser;
+use SeekTest\Domain\TestUser\TestUserRepository;
 
 class PersistenceTest extends AbstractIntegrationTest
 {
     public function testSave()
     {
-        $this->documentManager->getPersistenceService()->deleteAllIndexes();
+        $this->documentManager->getPersistenceService()->deleteIndex('test_user', true);
 
-        $this->documentManager->prepareIndex(User::class);
+        $this->documentManager->prepareIndex(TestUser::class);
 
-        $user = User::create([
+        $user = TestUser::create([
             'name' => 'Mr Potato Head',
             'email' => 'potato@potatohead.com',
         ]);
@@ -22,7 +23,7 @@ class PersistenceTest extends AbstractIntegrationTest
 
         $this->documentManager->flush();
 
-        sleep(1); // we cant perform searches until Elasticsearch has indexed the data.
+        sleep(1); // we cant perform searches until Elasticsearch has indexed the data. (refresh_interval)
 
         return $user->getId();
     }
@@ -33,13 +34,13 @@ class PersistenceTest extends AbstractIntegrationTest
      */
     public function testFind($id)
     {
-        $repository = $this->documentManager->getRepository(User::class);
+        $repository = $this->documentManager->getRepository(TestUser::class);
 
-        $this->assertInstanceOf(DefaultRepository::class, $repository);
+        $this->assertInstanceOf(TestUserRepository::class, $repository);
 
         $user = $repository->find($id);
 
-        $this->assertInstanceOf(User::class, $user);
+        $this->assertInstanceOf(TestUser::class, $user);
 
         $this->assertEquals('Mr Potato Head', $user->get('name'));
     }
@@ -50,10 +51,10 @@ class PersistenceTest extends AbstractIntegrationTest
      */
     public function testFindByName($id)
     {
-        $repository = $this->documentManager->getRepository(User::class);
+        $repository = $this->documentManager->getRepository(TestUser::class);
         $user = $repository->findOneBy(['name' => 'Mr Potato Head']);
 
-        $this->assertInstanceOf(User::class, $user);
+        $this->assertInstanceOf(TestUser::class, $user);
         $this->assertEquals($id, $user->getId());
 
         return $id;
@@ -65,7 +66,7 @@ class PersistenceTest extends AbstractIntegrationTest
      */
     public function testRemove($id)
     {
-        $repository = $this->documentManager->getRepository(User::class);
+        $repository = $this->documentManager->getRepository(TestUser::class);
         $user = $repository->find($id);
 
         $this->documentManager->remove($user);

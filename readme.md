@@ -72,16 +72,9 @@ class UserIndex implements \Seek\Index\IndexInterface
     public function getMappings() : array
     {
         return [
-            'mappings' => [
-                $this->getType() => [
-                    '_source'    => [
-                        'enabled' => true,
-                    ],
-                    'properties' => [
-                        'name'  => ['type'  => 'string', 'index' => 'not_analyzed'],
-                        'email' => ['type'  => 'string', 'index' => 'not_analyzed'],
-                    ],
-                ],
+            'properties' => [
+                'name'  => ['type' => 'string', 'index' => 'not_analyzed'],
+                'email' => ['type' => 'string', 'index' => 'not_analyzed'],
             ],
         ];
     }

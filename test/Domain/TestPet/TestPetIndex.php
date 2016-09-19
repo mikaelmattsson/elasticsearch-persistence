@@ -30,7 +30,7 @@ class TestPetIndex implements IndexInterface
     public function serialize(DocumentInterface $document) : array
     {
         return [
-            'name'  => $document->get('name'),
+            'name' => $document->get('name'),
         ];
     }
 
@@ -50,18 +50,8 @@ class TestPetIndex implements IndexInterface
     public function getMappings() : array
     {
         return [
-            'mappings' => [
-                $this->getType() => [
-                    '_source'    => [
-                        'enabled' => true,
-                    ],
-                    'properties' => [
-                        'name'  => [
-                            'type'  => 'string',
-                            'index' => 'not_analyzed',
-                        ],
-                    ],
-                ],
+            'properties' => [
+                'name' => ['type' => 'string', 'index' => 'not_analyzed'],
             ],
         ];
     }

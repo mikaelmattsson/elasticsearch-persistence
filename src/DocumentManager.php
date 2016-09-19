@@ -5,6 +5,7 @@ namespace Seek;
 use Doctrine\Common\Persistence\ObjectManager;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
+use Elasticsearch\Common\Exceptions\BadRequest400Exception;
 use Seek\Document\DocumentInterface;
 use Seek\Index\IndexLocatorInterface;
 use Seek\Index\IndexList;
@@ -254,9 +255,21 @@ class DocumentManager implements ObjectManager
     public function prepareIndex($class)
     {
         $index = $this->indexList->getIndexOfClass($class);
-        
-        $this->client->indices()->create([
+
+        try {
+            $this->client->indices()->create([
+                'index' => $index->getIndex(),
+            ]);
+        } catch (BadRequest400Exception $e) {
+
+        }
+
+        $this->client->indices()->putMapping([
             'index' => $index->getIndex(),
+            'type' => $index->getType(),
+            'body' => [
+                $index->getType() => $index->getMappings(),
+            ],
         ]);
     }
 

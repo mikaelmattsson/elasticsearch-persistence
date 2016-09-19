@@ -2,6 +2,7 @@
 
 namespace Seek\Persistence;
 
+use Seek\Collection\DocumentCollection;
 use Seek\Document\DocumentInterface;
 use Seek\Index\IndexList;
 
@@ -95,7 +96,10 @@ class UnitOfWork
         return $this->removeStack;
     }
 
-    public function persistMany(array $result)
+    /**
+     * @param array|DocumentCollection $result
+     */
+    public function persistMany($result)
     {
         foreach ($result as $item) {
             $this->persist($item);

@@ -30,13 +30,24 @@ class IndexDeleteHandler
         $this->indexList = $indexList;
     }
 
+    /**
+     * @return array
+     */
     public function deleteAllIndexes()
     {
         return $this->client->indices()->delete(['index' => '*']);
     }
 
-    public function deleteIndex($indexName, $ignoreMissing)
+    /**
+     * @param $documentClass
+     * @param $ignoreMissing
+     * @return array|bool
+     * @throws Missing404Exception
+     */
+    public function deleteIndex($documentClass, $ignoreMissing)
     {
+        $indexName = $this->indexList->getIndexOfClass($documentClass)->getIndex();
+
         try {
             return $this->client->indices()->delete(['index' => $indexName]);
         } catch (Missing404Exception $e) {

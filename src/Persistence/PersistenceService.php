@@ -119,12 +119,12 @@ class PersistenceService
     }
 
     /**
-     * @param string $indexName
+     * @param string $documentClass
      * @param bool $ignoreMissing
      */
-    public function deleteIndex($indexName, $ignoreMissing = false)
+    public function deleteIndex($documentClass, $ignoreMissing = false)
     {
-        $this->indexDeleteHandler->deleteIndex($indexName, $ignoreMissing);
+        $this->indexDeleteHandler->deleteIndex($documentClass, $ignoreMissing);
     }
 
     /**

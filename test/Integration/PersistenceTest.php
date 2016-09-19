@@ -10,7 +10,7 @@ class PersistenceTest extends AbstractIntegrationTest
 {
     public function testSave()
     {
-        $this->documentManager->getPersistenceService()->deleteIndex('test_user', true);
+        $this->documentManager->getPersistenceService()->deleteIndex(TestUser::class, true);
 
         $this->documentManager->prepareIndex(TestUser::class);
 

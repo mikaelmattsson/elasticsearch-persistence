@@ -9,7 +9,7 @@ class SimpleTest extends AbstractIntegrationTest
 {
     public function testSave()
     {
-        $this->documentManager->getPersistenceService()->deleteIndex('test_pet', true);
+        $this->documentManager->getPersistenceService()->deleteIndex(TestPet::class, true);
 
         $this->documentManager->prepareIndex(TestPet::class);
 

@@ -8,7 +8,7 @@ class CrudTest extends AbstractIntegrationTest
 {
     public function testCrud()
     {
-        $this->documentManager->getPersistenceService()->deleteIndex('test_user', true);
+        $this->documentManager->getPersistenceService()->deleteIndex(TestUser::class, true);
 
         $this->documentManager->prepareIndex(TestUser::class);
 

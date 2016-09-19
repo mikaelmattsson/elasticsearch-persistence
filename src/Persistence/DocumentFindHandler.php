@@ -54,19 +54,28 @@ class DocumentFindHandler
         string $collectionClass,
         array $properties,
         array $orderBy = null,
-        $limit = null,
-        $offset = null
+        $limit = 10,
+        $offset = 0
     ) {
         $index = $this->indexList->getIndexOfClass($class);
+
+        $body = [
+            'from' => $offset,
+            'size' => $limit,
+        ];
+
+        if ($properties) {
+            $body['query'] = ['match' => $properties];
+        }
+
+        if ($orderBy) {
+            $body['sort'] = $orderBy;
+        }
 
         $result = $this->client->search([
             'index' => $index->getIndex(),
             'type'  => $index->getType(),
-            'body'  => [
-                'query' => [
-                    'match' => $properties,
-                ],
-            ],
+            'body'  => $body,
         ]);
 
         return $this->documentFactory->makeMany($class, $collectionClass, $result, $index);
